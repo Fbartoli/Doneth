@@ -1,0 +1,30 @@
+{
+  "name": "ls",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ponder dev",
+    "start": "ponder start",
+    "db": "ponder db",
+    "codegen": "ponder codegen",
+    "serve": "ponder serve",
+    "lint": "eslint .",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "abitype": "^0.10.3",
+    "drizzle-orm": "^0.43.1",
+    "hono": "^4.7.8",
+    "ponder": "^0.10.23",
+    "viem": "^2.28.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.32",
+    "eslint": "^8.57.1",
+    "eslint-config-ponder": "^0.10.23",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.14"
+  }
+}
