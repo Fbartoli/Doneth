@@ -15,6 +15,7 @@ out
 # Hardhat files
 **/cache-zk
 **/artifacts-zk
+**/deployments-zk
 
 # TypeChain files
 /typechain

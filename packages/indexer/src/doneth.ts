@@ -16,6 +16,7 @@ ponder.on("Campaign:CampaignStarted", async ({ event, context }) => {
   });
 });
 
+
 ponder.on("Campaign:Contribution", async ({ event, context }) => {
   const { contributor, amount } = event.args;
   console.log("contributor", contributor);

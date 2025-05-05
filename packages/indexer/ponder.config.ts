@@ -12,7 +12,7 @@ export default createConfig({
   networks: {
     testnet: {
       chainId: 31337,
-      transport: http(process.env.PONDER_RPC_URL_1),
+      transport: http(process.env.PONDER_RPC_URL),
     },
   },
   contracts: {
@@ -20,11 +20,11 @@ export default createConfig({
       network: "testnet",
       abi: campaignAbi,
       address: factory({
-        address: "0xB90AcF57C3BFE8e0E8215defc282B5F48b3edC74",
+        address: process.env.FACTORY_ADDRESS as `0x${string}`,
         event: proxyCreationEvent,
         parameter: "campaignAddress",
       }),
-      startBlock: 22403150,
+      startBlock: 1337713,
     },
   },
 });

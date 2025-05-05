@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
  * @title CrowdfundingCampaign
@@ -12,9 +11,8 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
  * @notice Manages a single crowdfunding campaign, accepting ETH or a specified ERC20 token.
  * Allows contributors to claim refunds if the goal isn't met by the deadline,
  * and the beneficiary to withdraw funds if the campaign is successful.
- * Designed to be deployed as a clone (proxy) via a factory.
  */
-contract CrowdfundingCampaign is Initializable, ReentrancyGuard {
+contract CrowdfundingCampaign is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     enum State {
@@ -23,7 +21,6 @@ contract CrowdfundingCampaign is Initializable, ReentrancyGuard {
         Failed
     }
 
-    // State variables are no longer immutable, set during initialization
     address public beneficiary;
     uint256 public goal; // Amount in wei (for ETH) or smallest unit (for ERC20)
     uint256 public deadline; // Unix timestamp
@@ -59,7 +56,6 @@ contract CrowdfundingCampaign is Initializable, ReentrancyGuard {
     error WithdrawalDeadlinePassed();
     error WithdrawalDeadlineNotPassed();
     error NothingToReclaim();
-    // Missing error NotInitialized? Initializable handles this.
 
     modifier onlyState(State _state) {
         if (currentState != _state) {
@@ -71,28 +67,20 @@ contract CrowdfundingCampaign is Initializable, ReentrancyGuard {
     }
 
     /**
-     * @notice Constructor is only used for deploying the implementation contract.
-     * It immediately disables initialization for the implementation itself.
-     */
-    constructor() {
-        _disableInitializers(); // Prevent the implementation contract from being initialized
-    }
-
-    /**
-     * @notice Initializes the campaign state. Called once by the factory when creating a clone.
+     * @notice Initializes the campaign state. Called once by the factory when creating a campaign.
      * @param _beneficiary The address that will receive funds if the campaign is successful.
      * @param _goal The funding goal in wei (for ETH) or smallest unit (for ERC20).
      * @param _deadline The Unix timestamp after which contributions are no longer accepted.
      * @param _withdrawalPeriod The duration in seconds after success during which the beneficiary must withdraw.
      * @param _name The name of the campaign.
      */
-    function initialize(
+    constructor(
         address _beneficiary,
         uint256 _goal,
         uint256 _deadline,
         uint256 _withdrawalPeriod,
         string memory _name
-    ) external initializer {
+    ) {
         require(_beneficiary != address(0), "Beneficiary cannot be zero address");
         require(_goal > 0, "Goal must be greater than zero");
         require(_deadline > block.timestamp, "Deadline must be in the future");
