@@ -13,8 +13,8 @@ out
 /broadcast/**/dry-run/
 
 # Hardhat files
-/cache-zk
-/artifacts-zk
+**/cache-zk
+**/artifacts-zk
 
 # TypeChain files
 /typechain
