@@ -9,16 +9,6 @@ importers:
   .: {}
 
   packages/contracts:
-    dependencies:
-      '@openzeppelin/contracts':
-        specifier: ^5.3.0
-        version: 5.3.0
-      '@openzeppelin/contracts-upgradeable':
-        specifier: ^5.3.0
-        version: 5.3.0(@openzeppelin/contracts@5.3.0)
-      dotenv:
-        specifier: ^16.5.0
-        version: 16.5.0
     devDependencies:
       '@matterlabs/hardhat-zksync':
         specifier: ^1.5.0
@@ -26,6 +16,12 @@ importers:
       '@nomicfoundation/hardhat-toolbox':
         specifier: ^5.0.0
         version: 5.0.0(5f3ce6d6e64031c34a236fcfec7bc51b)
+      '@openzeppelin/contracts':
+        specifier: ^4.9.6
+        version: 4.9.6
+      '@openzeppelin/contracts-upgradeable':
+        specifier: ^4.9.6
+        version: 4.9.6
       hardhat:
         specifier: ^2.23.0
         version: 2.23.0(bufferutil@4.0.9)(ts-node@10.9.2(@types/node@22.7.5)(typescript@5.8.3))(typescript@5.8.3)(utf-8-validate@5.0.10)
@@ -66,6 +62,9 @@ importers:
 
   packages/web:
     dependencies:
+      '@lens-protocol/client':
+        specifier: 0.0.0-canary-20250430134539
+        version: 0.0.0-canary-20250430134539(ethers@6.13.7(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.8.3)(viem@2.28.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zksync-ethers@6.17.0(ethers@6.13.7(bufferutil@4.0.9)(utf-8-validate@5.0.10)))
       '@ponder/client':
         specifier: ^0.10.24
         version: 0.10.24(@electric-sql/pglite@0.2.13)(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(kysely@0.26.3)(pg@8.15.6)(typescript@5.8.3)
@@ -132,6 +131,20 @@ importers:
         version: 5.8.3
 
 packages:
+
+  '@0no-co/graphql.web@1.1.2':
+    resolution: {integrity: sha512-N2NGsU5FLBhT8NZ+3l2YrzZSHITjNXNuDhC4iDiikv0IujaJ0Xc6xIxQZ/Ek3Cb+rgPjnLHYyJm11tInuJn+cw==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    peerDependenciesMeta:
+      graphql:
+        optional: true
+
+  '@0no-co/graphqlsp@1.12.16':
+    resolution: {integrity: sha512-B5pyYVH93Etv7xjT6IfB7QtMBdaaC07yjbhN6v8H7KgFStMkPvi+oWYBTibMFRMY89qwc9H8YixXg8SXDVgYWw==}
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      typescript: ^5.0.0
 
   '@adraffy/ens-normalize@1.10.1':
     resolution: {integrity: sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==}
@@ -742,6 +755,26 @@ packages:
   '@fastify/busboy@3.1.1':
     resolution: {integrity: sha512-5DGmA8FTdB2XbDeEwc/5ZXBl6UbBAyBOOLlPuBnZ/N1SwdH9Ii+cOX3tBROlDgcTXxjOYnLMVoKk9+FXAw0CJw==}
 
+  '@gql.tada/cli-utils@1.6.3':
+    resolution: {integrity: sha512-jFFSY8OxYeBxdKi58UzeMXG1tdm4FVjXa8WHIi66Gzu9JWtCE6mqom3a8xkmSw+mVaybFW5EN2WXf1WztJVNyQ==}
+    peerDependencies:
+      '@0no-co/graphqlsp': ^1.12.13
+      '@gql.tada/svelte-support': 1.0.1
+      '@gql.tada/vue-support': 1.0.1
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      typescript: ^5.0.0
+    peerDependenciesMeta:
+      '@gql.tada/svelte-support':
+        optional: true
+      '@gql.tada/vue-support':
+        optional: true
+
+  '@gql.tada/internal@1.0.8':
+    resolution: {integrity: sha512-XYdxJhtHC5WtZfdDqtKjcQ4d7R1s0d1rnlSs3OcBEUbYiPoJJfZU7tWsVXuv047Z6msvmr4ompJ7eLSK5Km57g==}
+    peerDependencies:
+      graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
+      typescript: ^5.0.0
+
   '@graphql-tools/executor@1.4.7':
     resolution: {integrity: sha512-U0nK9jzJRP9/9Izf1+0Gggd6K6RNRsheFo1gC/VWzfnsr0qjcOSS9qTjY0OTC5iTPt4tQ+W5Zpw/uc7mebI6aA==}
     engines: {node: '>=16.0.0'}
@@ -967,6 +1000,35 @@ packages:
 
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
+
+  '@lens-protocol/client@0.0.0-canary-20250430134539':
+    resolution: {integrity: sha512-vVG89Fw27FvSKeV9sxr6OzxKqoP1gib7dT0hj17/4pNt0NMPq5tROyCj4OngWXIpH5Z0OpiFBOR73kBZ4USoTg==}
+    peerDependencies:
+      '@lens-chain/sdk': ^1.0.0
+      ethers: ^6.13.4
+      viem: ^2.21.53
+      zksync-ethers: ^6.15.3
+    peerDependenciesMeta:
+      '@lens-chain/sdk':
+        optional: true
+      ethers:
+        optional: true
+      viem:
+        optional: true
+      zksync-ethers:
+        optional: true
+
+  '@lens-protocol/env@0.0.0-canary-20250430134539':
+    resolution: {integrity: sha512-aZqxaeW22tBdz9sc6+7eFHp86sKNzQ1Snabpr9vT4vn8oxlDt6XTQL/Fxhm0e33wQff5/aOirs6iQ7swhTbiZg==}
+
+  '@lens-protocol/graphql@0.0.0-canary-20250430134539':
+    resolution: {integrity: sha512-PA7ZMLh5muiwJXP9bQqEReOH6WKWru3cM96E4yLv1c7qBsP7hn0MIu+QrUUUut4lQuQpOYonstMb0Cn4N5Nh5Q==}
+
+  '@lens-protocol/storage@0.0.0-canary-20250430134539':
+    resolution: {integrity: sha512-ja1teDhpCqLxwVGngJuTuy32ppKxxW2dr7G9f//vxNgoV93u2BNrcqJ/sEWTskok1gKMgRCpruyLWr4KN+VQog==}
+
+  '@lens-protocol/types@0.0.0-canary-20250430134539':
+    resolution: {integrity: sha512-7JtfJpYfSC8P+t3w2lzaSgXbH1IvQpo/pxunnztl9TktIqHbnkxiRHKLWffvOqVo3JpLVb3Cye1/nLhV7ENSQA==}
 
   '@lit-labs/ssr-dom-shim@1.3.0':
     resolution: {integrity: sha512-nQIWonJ6eFAvUUrSlwyHDm/aE8PBDu5kRpL0vHMg6K8fK3Diq1xdPjTnsJSwxABhaZ+5eBi1btQB5ShUTKo4nQ==}
@@ -1607,10 +1669,11 @@ packages:
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
 
-  '@openzeppelin/contracts-upgradeable@5.3.0':
-    resolution: {integrity: sha512-yVzSSyTMWO6rapGI5tuqkcLpcGGXA0UA1vScyV5EhE5yw8By3Ewex9rDUw8lfVw0iTkvR/egjfcW5vpk03lqZg==}
-    peerDependencies:
-      '@openzeppelin/contracts': 5.3.0
+  '@openzeppelin/contracts-upgradeable@4.9.6':
+    resolution: {integrity: sha512-m4iHazOsOCv1DgM7eD7GupTJ+NFVujRZt1wzddDPSVGpWdKq1SKkla5htKG7+IS4d2XOCtzkUNwRZ7Vq5aEUMA==}
+
+  '@openzeppelin/contracts@4.9.6':
+    resolution: {integrity: sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==}
 
   '@openzeppelin/contracts@5.3.0':
     resolution: {integrity: sha512-zj/KGoW7zxWUE8qOI++rUM18v+VeLTTzKs/DJFkSzHpQFPD/jKKF0TrMxBfGLl3kpdELCNccvB3zmofSzm4nlA==}
@@ -2523,6 +2586,14 @@ packages:
     resolution: {integrity: sha512-friS8NEQfHaDbkThxopGk+LuE5v3iY0StruifjQEt7SLbA46OnfgMO15sOTkbpJkol6RB+1l1TYPXh0sCddpvA==}
     cpu: [x64]
     os: [win32]
+
+  '@urql/core@5.1.1':
+    resolution: {integrity: sha512-aGh024z5v2oINGD/In6rAtVKTm4VmQ2TxKQBAtk2ZSME5dunZFcjltw4p5ENQg+5CBhZ3FHMzl0Oa+rwqiWqlg==}
+
+  '@urql/exchange-auth@2.2.1':
+    resolution: {integrity: sha512-n4xUxxjvY36GJh539sLaPFyvFzreADOv8EFQdTiXOCIRVoXXhWVVI7DjY/HNtLICfbg1+UlbvQ7sNkwaBouDHg==}
+    peerDependencies:
+      '@urql/core': ^5.0.0
 
   '@wagmi/connectors@5.8.1':
     resolution: {integrity: sha512-SGbodB8a/Yr3SHPzWO1cWg/PFXTpimsxbR59q1usv0Nsj+5imocVtP3ba9KnSqOfv5wEvP4ljyQhHHa7ALoJOw==}
@@ -4463,6 +4534,12 @@ packages:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
 
+  gql.tada@1.8.10:
+    resolution: {integrity: sha512-FrvSxgz838FYVPgZHGOSgbpOjhR+yq44rCzww3oOPJYi0OvBJjAgCiP6LEokZIYND2fUTXzQAyLgcvgw1yNP5A==}
+    hasBin: true
+    peerDependencies:
+      typescript: ^5.0.0
+
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
@@ -4929,6 +5006,10 @@ packages:
   just-extend@6.2.0:
     resolution: {integrity: sha512-cYofQu2Xpom82S6qD778jBDpwvvy39s1l/hrYij2u9AMdQcGRpaBu6kY4mVhuno5kJVi1DAz4aiphA2WI1/OAw==}
 
+  jwt-decode@4.0.0:
+    resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
+    engines: {node: '>=18'}
+
   keccak@3.0.4:
     resolution: {integrity: sha512-3vKuW0jV8J3XNTzvfyicFR5qvxrSAGl7KIhvgOu5cmWwM7tZRj3fMbj/pfIf4be7aznbc+prBWGjywox/g2Y6Q==}
     engines: {node: '>=10.0.0'}
@@ -5265,6 +5346,10 @@ packages:
 
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+
+  neverthrow@8.2.0:
+    resolution: {integrity: sha512-kOCT/1MCPAxY5iUV3wytNFUMUolzuwd/VF/1KCx7kf6CutrOsTie+84zTGTpgQycjvfLdBBdvBvFLqFD2c0wkQ==}
+    engines: {node: '>=18'}
 
   next@15.3.1:
     resolution: {integrity: sha512-8+dDV0xNLOgHlyBxP1GwHGVaNXsmp+2NhZEYrXr24GWLHtt27YrBPbPuHvzlhi7kZNYjeJNR93IF5zfFu5UL0g==}
@@ -6561,6 +6646,10 @@ packages:
     resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
     engines: {node: '>=14.16'}
 
+  type-fest@4.40.1:
+    resolution: {integrity: sha512-9YvLNnORDpI+vghLU/Nf+zSv0kL47KbVJ1o3sKgoTefl6i+zebxbiDQWoe/oWWqPhIgQdRZRT1KA9sCPL810SA==}
+    engines: {node: '>=16'}
+
   type-is@2.0.1:
     resolution: {integrity: sha512-OZs6gsjF4vMp32qrCbiVSkrFmXtG/AZhY3t0iAMrMBiAZyV9oALtXO8hsrHbMXF9x6L3grlFuwW2oAz7cav+Gw==}
     engines: {node: '>= 0.6'}
@@ -6917,6 +7006,9 @@ packages:
     resolution: {integrity: sha512-NsmoXalsWVDMGupxZ5R08ka9flZjjiLvHVAWYOKtiKM8ujtZWr9cRffak+uSE48+Ob8ObalXpwyeUiyDD6QFgg==}
     engines: {node: '>=8'}
 
+  wonka@6.3.5:
+    resolution: {integrity: sha512-SSil+ecw6B4/Dm7Pf2sAshKQ5hWFvfyGlfPbEd6A14dOH6VDjrmbY86u6nZvy9omGwwIPFR8V41+of1EezgoUw==}
+
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
@@ -7088,6 +7180,16 @@ packages:
         optional: true
 
 snapshots:
+
+  '@0no-co/graphql.web@1.1.2(graphql@16.11.0)':
+    optionalDependencies:
+      graphql: 16.11.0
+
+  '@0no-co/graphqlsp@1.12.16(graphql@16.11.0)(typescript@5.8.3)':
+    dependencies:
+      '@gql.tada/internal': 1.0.8(graphql@16.11.0)(typescript@5.8.3)
+      graphql: 16.11.0
+      typescript: 5.8.3
 
   '@adraffy/ens-normalize@1.10.1': {}
 
@@ -8149,6 +8251,19 @@ snapshots:
 
   '@fastify/busboy@3.1.1': {}
 
+  '@gql.tada/cli-utils@1.6.3(@0no-co/graphqlsp@1.12.16(graphql@16.11.0)(typescript@5.8.3))(graphql@16.11.0)(typescript@5.8.3)':
+    dependencies:
+      '@0no-co/graphqlsp': 1.12.16(graphql@16.11.0)(typescript@5.8.3)
+      '@gql.tada/internal': 1.0.8(graphql@16.11.0)(typescript@5.8.3)
+      graphql: 16.11.0
+      typescript: 5.8.3
+
+  '@gql.tada/internal@1.0.8(graphql@16.11.0)(typescript@5.8.3)':
+    dependencies:
+      '@0no-co/graphql.web': 1.1.2(graphql@16.11.0)
+      graphql: 16.11.0
+      typescript: 5.8.3
+
   '@graphql-tools/executor@1.4.7(graphql@16.11.0)':
     dependencies:
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
@@ -8355,6 +8470,50 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@js-sdsl/ordered-map@4.4.2': {}
+
+  '@lens-protocol/client@0.0.0-canary-20250430134539(ethers@6.13.7(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.8.3)(viem@2.28.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zksync-ethers@6.17.0(ethers@6.13.7(bufferutil@4.0.9)(utf-8-validate@5.0.10)))':
+    dependencies:
+      '@lens-protocol/env': 0.0.0-canary-20250430134539
+      '@lens-protocol/graphql': 0.0.0-canary-20250430134539(typescript@5.8.3)
+      '@lens-protocol/storage': 0.0.0-canary-20250430134539
+      '@lens-protocol/types': 0.0.0-canary-20250430134539
+      '@urql/core': 5.1.1(graphql@16.11.0)
+      '@urql/exchange-auth': 2.2.1(@urql/core@5.1.1(graphql@16.11.0))
+      graphql: 16.11.0
+      jwt-decode: 4.0.0
+    optionalDependencies:
+      ethers: 6.13.7(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      viem: 2.28.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+      zksync-ethers: 6.17.0(ethers@6.13.7(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+    transitivePeerDependencies:
+      - '@gql.tada/svelte-support'
+      - '@gql.tada/vue-support'
+      - typescript
+
+  '@lens-protocol/env@0.0.0-canary-20250430134539':
+    dependencies:
+      '@lens-protocol/types': 0.0.0-canary-20250430134539
+
+  '@lens-protocol/graphql@0.0.0-canary-20250430134539(typescript@5.8.3)':
+    dependencies:
+      '@lens-protocol/types': 0.0.0-canary-20250430134539
+      gql.tada: 1.8.10(graphql@16.11.0)(typescript@5.8.3)
+      graphql: 16.11.0
+      type-fest: 4.40.1
+    transitivePeerDependencies:
+      - '@gql.tada/svelte-support'
+      - '@gql.tada/vue-support'
+      - typescript
+
+  '@lens-protocol/storage@0.0.0-canary-20250430134539':
+    dependencies:
+      '@lens-protocol/types': 0.0.0-canary-20250430134539
+      zod: 3.24.4
+
+  '@lens-protocol/types@0.0.0-canary-20250430134539':
+    dependencies:
+      neverthrow: 8.2.0
+      type-fest: 4.40.1
 
   '@lit-labs/ssr-dom-shim@1.3.0': {}
 
@@ -9292,9 +9451,9 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
 
-  '@openzeppelin/contracts-upgradeable@5.3.0(@openzeppelin/contracts@5.3.0)':
-    dependencies:
-      '@openzeppelin/contracts': 5.3.0
+  '@openzeppelin/contracts-upgradeable@4.9.6': {}
+
+  '@openzeppelin/contracts@4.9.6': {}
 
   '@openzeppelin/contracts@5.3.0': {}
 
@@ -10670,6 +10829,18 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.7.2':
     optional: true
+
+  '@urql/core@5.1.1(graphql@16.11.0)':
+    dependencies:
+      '@0no-co/graphql.web': 1.1.2(graphql@16.11.0)
+      wonka: 6.3.5
+    transitivePeerDependencies:
+      - graphql
+
+  '@urql/exchange-auth@2.2.1(@urql/core@5.1.1(graphql@16.11.0))':
+    dependencies:
+      '@urql/core': 5.1.1(graphql@16.11.0)
+      wonka: 6.3.5
 
   '@wagmi/connectors@5.8.1(@types/react@19.1.2)(@wagmi/core@2.17.1(@tanstack/query-core@5.75.0)(@types/react@19.1.2)(immer@10.0.2)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.28.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(bufferutil@4.0.9)(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.28.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zod@3.24.4)':
     dependencies:
@@ -13385,6 +13556,18 @@ snapshots:
 
   gopd@1.2.0: {}
 
+  gql.tada@1.8.10(graphql@16.11.0)(typescript@5.8.3):
+    dependencies:
+      '@0no-co/graphql.web': 1.1.2(graphql@16.11.0)
+      '@0no-co/graphqlsp': 1.12.16(graphql@16.11.0)(typescript@5.8.3)
+      '@gql.tada/cli-utils': 1.6.3(@0no-co/graphqlsp@1.12.16(graphql@16.11.0)(typescript@5.8.3))(graphql@16.11.0)(typescript@5.8.3)
+      '@gql.tada/internal': 1.0.8(graphql@16.11.0)(typescript@5.8.3)
+      typescript: 5.8.3
+    transitivePeerDependencies:
+      - '@gql.tada/svelte-support'
+      - '@gql.tada/vue-support'
+      - graphql
+
   graceful-fs@4.2.11: {}
 
   graphemer@1.4.0: {}
@@ -13901,6 +14084,8 @@ snapshots:
 
   just-extend@6.2.0: {}
 
+  jwt-decode@4.0.0: {}
+
   keccak@3.0.4:
     dependencies:
       node-addon-api: 2.0.2
@@ -14189,6 +14374,10 @@ snapshots:
   negotiator@1.0.0: {}
 
   neo-async@2.6.2: {}
+
+  neverthrow@8.2.0:
+    optionalDependencies:
+      '@rollup/rollup-linux-x64-gnu': 4.40.1
 
   next@15.3.1(@babel/core@7.27.1)(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -15786,6 +15975,8 @@ snapshots:
 
   type-fest@3.13.1: {}
 
+  type-fest@4.40.1: {}
+
   type-is@2.0.1:
     dependencies:
       content-type: 1.0.5
@@ -16219,6 +16410,8 @@ snapshots:
   widest-line@3.1.0:
     dependencies:
       string-width: 4.2.3
+
+  wonka@6.3.5: {}
 
   word-wrap@1.2.5: {}
 

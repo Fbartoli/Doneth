@@ -1,28 +1,58 @@
 "use client";
 import { ConnectKitButton } from "connectkit";
-import { useWriteContract, useReadContract, useChainId, useSendTransaction } from 'wagmi'
+import { useWriteContract, useReadContract, useChainId, useSendTransaction, useWalletClient, useAccount } from 'wagmi'
 import { factoryAbi } from "./abis/factoryAbi"
 import { parseEther } from "viem"
 import { usePonderQuery } from "@ponder/react";
 import { Campaign } from "./ponder/ponder.schema";
+import { signMessageWith } from "@lens-protocol/client/viem";
+import { PublicClient, mainnet, SessionClient } from "@lens-protocol/client";
+import { useState } from "react";
 
 export default function Home() {
   const { data: hash, writeContract } = useWriteContract()
   const { data: hash1, sendTransaction } = useSendTransaction()
-  const chainId = useChainId()
+  const { address } = useAccount()
+  const { data: walletClient } = useWalletClient()
+  const [authenticated, setAuthenticated] = useState<SessionClient | boolean>(false)
+  const chainId = useChainId()  
+  const client = PublicClient.create({
+    environment: mainnet,
+  });
   const { data: campaigns } = useReadContract({
     address: process.env.NEXT_PUBLIC_FACTORY! as `0x${string}`,
     abi: factoryAbi,
     functionName: "getDeployedCampaigns",
   })
 
-  const { data, isError, isPending } = usePonderQuery({
+  const login = async () => {
+    const authenticated = await client.login({
+      onboardingUser: {
+        app: "0x8FA8f97850A5BB6D8a02c56f198Dc93e532Fd88C",
+        wallet: address,
+      },
+      signMessage: signMessageWith(walletClient!),
+    });
+
+    // The result of client.login is a Result type (Ok/Err), not the session directly.
+    // You should check if it's Ok before setting authenticated.
+    if (authenticated.isOk()) {
+      setAuthenticated(authenticated.value);
+    } else {
+      // Optionally handle error here, e.g. show a message or log
+      setAuthenticated(false);
+      // console.error(authenticated.error);
+    }
+  }
+
+  const { data } = usePonderQuery({
     queryFn: (db) =>
       db.select()
         .from(Campaign)
         .orderBy(Campaign.createdAt)
         .limit(10),
   });
+
 
   const createCampaign = async () => {
     await writeContract({
@@ -60,6 +90,8 @@ export default function Home() {
         {data && data.map((campaign) => {
           return <div key={campaign.address}>{campaign.name}</div>
         })}
+        {authenticated && <div>Authenticated</div>}
+        <button onClick={login}>Login</button>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
       </footer>
