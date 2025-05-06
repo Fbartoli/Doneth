@@ -1,155 +1,116 @@
 export const factoryAbi = [
   {
-    "type": "constructor",
-    "inputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "createCampaign",
+    "anonymous": false,
     "inputs": [
       {
-        "name": "_beneficiary",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "_goal",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_duration",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_withdrawalPeriod",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_name",
-        "type": "string",
-        "internalType": "string"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "campaignAddress",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "deployedCampaigns",
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getDeployedCampaigns",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "implementation",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "event",
-    "name": "CampaignCreated",
-    "inputs": [
-      {
-        "name": "campaignAddress",
-        "type": "address",
         "indexed": true,
-        "internalType": "address"
+        "internalType": "address",
+        "name": "campaignAddress",
+        "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
         "name": "beneficiary",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "goal",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "deadline",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "withdrawalPeriod",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
+        "type": "uint256"
       },
       {
-        "name": "name",
-        "type": "string",
         "indexed": false,
-        "internalType": "string"
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
       }
     ],
-    "anonymous": false
+    "name": "CampaignCreated",
+    "type": "event"
   },
   {
-    "type": "error",
-    "name": "FailedDeployment",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InsufficientBalance",
     "inputs": [
       {
-        "name": "balance",
-        "type": "uint256",
-        "internalType": "uint256"
+        "internalType": "address",
+        "name": "_beneficiary",
+        "type": "address"
       },
       {
-        "name": "needed",
-        "type": "uint256",
-        "internalType": "uint256"
+        "internalType": "uint256",
+        "name": "_goal",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_duration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_withdrawalPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
       }
-    ]
+    ],
+    "name": "createCampaign",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "campaignAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "deployedCampaigns",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getDeployedCampaigns",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 ] as const;

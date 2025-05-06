@@ -1,29 +1,27 @@
 "use client";
-import { ConnectKitButton } from "connectkit";
-import { useWriteContract, useReadContract, useChainId, useSendTransaction, useWalletClient, useAccount } from 'wagmi'
+import Header from "../components/Header";
+import { useWriteContract, useWalletClient, useAccount } from 'wagmi'
 import { factoryAbi } from "./abis/factoryAbi"
-import { parseEther } from "viem"
 import { usePonderQuery } from "@ponder/react";
 import { Campaign } from "./ponder/ponder.schema";
 import { signMessageWith } from "@lens-protocol/client/viem";
-import { PublicClient, mainnet, SessionClient } from "@lens-protocol/client";
+import { PublicClient, mainnet, SessionClient, evmAddress } from "@lens-protocol/client";
 import { useState } from "react";
+import { desc, gt } from "ponder";
+import CreateCampaignCard from "../components/CreateCampaignCard";
+import CampaignTable from "../components/CampaignTable";
+import { fetchAccountsAvailable } from "@lens-protocol/client/actions";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
   const { data: hash, writeContract } = useWriteContract()
-  const { data: hash1, sendTransaction } = useSendTransaction()
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
   const [authenticated, setAuthenticated] = useState<SessionClient | boolean>(false)
-  const chainId = useChainId()  
+  const [expandedCampaignAddress, setExpandedCampaignAddress] = useState<string | null>(null);
   const client = PublicClient.create({
     environment: mainnet,
   });
-  const { data: campaigns } = useReadContract({
-    address: process.env.NEXT_PUBLIC_FACTORY! as `0x${string}`,
-    abi: factoryAbi,
-    functionName: "getDeployedCampaigns",
-  })
 
   const login = async () => {
     const authenticated = await client.login({
@@ -45,12 +43,26 @@ export default function Home() {
     }
   }
 
-  const { data } = usePonderQuery({
-    queryFn: (db) =>
-      db.select()
+  const { data: ponderData, isLoading: ponderIsLoading, error: ponderError } = usePonderQuery({
+    queryFn: (db) => {
+      const now = Math.floor(Date.now() / 1000);
+      return db.select()
         .from(Campaign)
-        .orderBy(Campaign.createdAt)
-        .limit(10),
+        .orderBy(desc(Campaign.totalContributions))
+        .where(gt(Campaign.deadline, BigInt(now)))
+        .limit(10)
+    }
+  });
+
+  const { data: accountsAvailable } = useQuery({
+    queryKey: ['accountsAvailable'],
+    queryFn: async () => {
+      const result = await fetchAccountsAvailable(client, {
+        managedBy: evmAddress(address!),
+        includeOwned: true,
+      });
+      return result;
+    },
   });
 
 
@@ -62,38 +74,65 @@ export default function Home() {
       args: [
         "0x75155d07f805eC2758eF6e2900B11F5988d17424",
         1n,
-        1000000000000000n,
+        100000000000n,
         1000n,
         "test",
       ],
     })
   }
 
-  const sendEth = async () => {
-    console.log("Sending Eth")
-    await sendTransaction({
-      to: '0x44857FCEE5328bCe58BdB97AFd1cC154Bd4d17f9',
-      value: parseEther('0.001'),
-    })
-  }
-
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <ConnectKitButton />
-        <button onClick={createCampaign}>Create Campaign</button>
-        {chainId && <div>Chain ID: {chainId}</div>}
-        {hash && <div>Transaction Hash: {hash}</div>}
-        <button onClick={sendEth}>Send Eth</button>
-        {hash1 && <div>Transaction Hash: {hash1}</div>}
-        {campaigns && <div>Campaigns: {campaigns.length}</div>}
-        {data && data.map((campaign) => {
-          return <div key={campaign.address}>{campaign.name}</div>
-        })}
-        {authenticated && <div>Authenticated</div>}
-        <button onClick={login}>Login</button>
+    <div className="flex flex-col min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)]">
+      <Header />
+
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto">
+          {authenticated && (
+            <CreateCampaignCard createCampaign={createCampaign} txHash={hash} />
+          )}
+          {accountsAvailable && (
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full">
+              <h2 className="text-xl font-semibold mb-4 text-gray-700">Accounts Available</h2>
+              <p className="text-gray-700">{JSON.stringify(accountsAvailable)}</p>
+            </div>
+          )}
+
+          {!authenticated && (
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full">
+              <h2 className="text-xl font-semibold mb-4 text-gray-700">Authenticate with Lens</h2>
+              <button
+                onClick={login}
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+              >
+                Login with Lens
+              </button>
+            </div>
+          )}
+
+
+          <div className="w-full">
+            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Active Campaigns</h2>
+
+            {ponderIsLoading && <p className="text-center text-gray-600">Loading campaigns...</p>}
+            {ponderError && <p className="text-center text-red-600">Error loading campaigns: {ponderError.message}</p>}
+
+            {ponderData && Array.isArray(ponderData) && ponderData.length > 0 ? (
+              <CampaignTable
+                campaigns={ponderData}
+                expandedCampaignAddress={expandedCampaignAddress}
+                setExpandedCampaignAddress={setExpandedCampaignAddress}
+              />
+            ) : (
+              !ponderIsLoading && <p className="text-center text-gray-500">No campaigns found.</p>
+            )}
+          </div>
+        </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+
+      <footer className="py-6 bg-gray-100 border-t border-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+          &copy; {new Date().getFullYear()} Doneth. All rights reserved.
+        </div>
       </footer>
     </div>
   );
