@@ -1,49 +1,28 @@
 "use client";
-import Header from "../components/Header";
-import { useWriteContract, useWalletClient, useAccount } from 'wagmi'
-import { factoryAbi } from "./abis/factoryAbi"
+import { useWalletClient, useAccount } from 'wagmi'
 import { usePonderQuery } from "@ponder/react";
 import { Campaign } from "./ponder/ponder.schema";
-import { signMessageWith } from "@lens-protocol/client/viem";
-import { PublicClient, mainnet, SessionClient, evmAddress } from "@lens-protocol/client";
-import { useState } from "react";
+import { handleOperationWith, signMessageWith } from "@lens-protocol/client/viem";
+import { evmAddress, Role, Account } from "@lens-protocol/client";
 import { desc, gt } from "ponder";
-import CreateCampaignCard from "../components/CreateCampaignCard";
-import CampaignTable from "../components/CampaignTable";
-import { fetchAccountsAvailable } from "@lens-protocol/client/actions";
-import { useQuery } from "@tanstack/react-query";
+import { useAccountsAvailable, useAuthenticatedUser, useLogin, useSessionClient } from "@lens-protocol/react";
+import { useSelectedAccount } from "../contexts/SelectedAccountContext";
+import { createAccountWithUsername, fetchAccount } from '@lens-protocol/client/actions';
+import { account } from '@lens-protocol/metadata';
+import { immutable, StorageClient } from "@lens-chain/storage-client";
+
+import { lens } from "viem/chains";
+
+const storageClient = StorageClient.create();
+
 
 export default function Home() {
-  const { data: hash, writeContract } = useWriteContract()
   const { address } = useAccount()
-  const { data: walletClient } = useWalletClient()
-  const [authenticated, setAuthenticated] = useState<SessionClient | boolean>(false)
-  const [expandedCampaignAddress, setExpandedCampaignAddress] = useState<string | null>(null);
-  const client = PublicClient.create({
-    environment: mainnet,
-  });
+  const { account: selectedAccount } = useSelectedAccount();
+  const { data: authenticatedUser } = useAuthenticatedUser();
+  console.log("authenticatedUser", authenticatedUser)
 
-  const login = async () => {
-    const authenticated = await client.login({
-      onboardingUser: {
-        app: "0x8FA8f97850A5BB6D8a02c56f198Dc93e532Fd88C",
-        wallet: address,
-      },
-      signMessage: signMessageWith(walletClient!),
-    });
-
-    // The result of client.login is a Result type (Ok/Err), not the session directly.
-    // You should check if it's Ok before setting authenticated.
-    if (authenticated.isOk()) {
-      setAuthenticated(authenticated.value);
-    } else {
-      // Optionally handle error here, e.g. show a message or log
-      setAuthenticated(false);
-      // console.error(authenticated.error);
-    }
-  }
-
-  const { data: ponderData, isLoading: ponderIsLoading, error: ponderError } = usePonderQuery({
+  const { isLoading: ponderIsLoading, error: ponderError } = usePonderQuery({
     queryFn: (db) => {
       const now = Math.floor(Date.now() / 1000);
       return db.select()
@@ -54,86 +33,146 @@ export default function Home() {
     }
   });
 
-  const { data: accountsAvailable } = useQuery({
-    queryKey: ['accountsAvailable'],
-    queryFn: async () => {
-      const result = await fetchAccountsAvailable(client, {
-        managedBy: evmAddress(address!),
-        includeOwned: true,
-      });
-      return result;
-    },
-  });
-
-
-  const createCampaign = async () => {
-    await writeContract({
-      address: process.env.NEXT_PUBLIC_FACTORY! as `0x${string}`,
-      abi: factoryAbi,
-      functionName: "createCampaign",
-      args: [
-        "0x75155d07f805eC2758eF6e2900B11F5988d17424",
-        1n,
-        100000000000n,
-        1000n,
-        "test",
-      ],
-    })
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)]">
-      <Header />
-
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto">
-          {authenticated && (
-            <CreateCampaignCard createCampaign={createCampaign} txHash={hash} />
-          )}
-          {accountsAvailable && (
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-              <h2 className="text-xl font-semibold mb-4 text-gray-700">Accounts Available</h2>
-              <p className="text-gray-700">{JSON.stringify(accountsAvailable)}</p>
-            </div>
+
+
+          {!selectedAccount && address && !authenticatedUser && (
+            <LoginOptions address={address} />
           )}
 
-          {!authenticated && (
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-              <h2 className="text-xl font-semibold mb-4 text-gray-700">Authenticate with Lens</h2>
-              <button
-                onClick={login}
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
-              >
-                Login with Lens
-              </button>
+          {!address && (
+            <div className="w-full bg-white p-6 rounded-lg shadow-lg text-center">
+              <h2 className="text-xl font-semibold mb-2 text-gray-700">Welcome to Doneth</h2>
+              <p className="text-gray-600">Please connect your wallet using the button in the top-right corner to continue.</p>
             </div>
           )}
-
 
           <div className="w-full">
-            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Active Campaigns</h2>
 
             {ponderIsLoading && <p className="text-center text-gray-600">Loading campaigns...</p>}
             {ponderError && <p className="text-center text-red-600">Error loading campaigns: {ponderError.message}</p>}
 
-            {ponderData && Array.isArray(ponderData) && ponderData.length > 0 ? (
-              <CampaignTable
-                campaigns={ponderData}
-                expandedCampaignAddress={expandedCampaignAddress}
-                setExpandedCampaignAddress={setExpandedCampaignAddress}
-              />
-            ) : (
-              !ponderIsLoading && <p className="text-center text-gray-500">No campaigns found.</p>
-            )}
           </div>
         </div>
       </main>
 
-      <footer className="py-6 bg-gray-100 border-t border-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} Doneth. All rights reserved.
-        </div>
-      </footer>
+
     </div>
   );
+}
+
+export function LoginOptions({ address }: { address: string }) {
+  const { data } = useAccountsAvailable({ managedBy: evmAddress(address) });
+  const { execute } = useLogin();
+  const { data: sessionData } = useSessionClient();
+  const { data: walletData } = useWalletClient();
+  const { setAccount: setSelectedAccount } = useSelectedAccount();
+
+
+
+  // Helper to shorten long addresses
+  const shorten = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+
+  const handleCreateProfile = async () => {
+    // Trigger onboarding (creates a session & profile) then upload metadata & create account
+    await execute({
+      onboardingUser: {
+        app: evmAddress("0x167cD03A0dc9eB30A94caAcf3dea05e0f351cBAc"),
+        wallet: evmAddress(address),
+      },
+      signMessage: signMessageWith(walletData!),
+    });
+
+    const metadata = account({ name: 'New user' });
+    const { uri } = await storageClient.uploadFile(
+      new File([JSON.stringify(metadata)], 'metadata.json', { type: 'application/json' }),
+      { acl: immutable(lens.id) },
+    );
+
+    await createAccountWithUsername(sessionData!, {
+      metadataUri: uri,
+      username: { localName: `user-${Date.now()}` },
+    })
+      .andThen(handleOperationWith(walletData!))
+      .andThen(sessionData!.waitForTransaction)
+      .andThen((txHash) => fetchAccount(sessionData!, { txHash }))
+      .match(() => { }, (error) => { throw error; });
+  };
+
+  function LoginWith({ account, role: _role }: { account: Account; role: Role }) {
+    return (
+      <div className="bg-white border rounded-lg shadow hover:shadow-md p-6 flex flex-col items-center text-center">
+        <div className="text-lg font-medium text-gray-800 mb-1">
+          {account.username?.value ?? shorten(account.address)}
+        </div>
+        <div className="text-xs text-gray-500 break-all mb-4">{shorten(account.address)}</div>
+        <div className="text-xs text-gray-500 break-all mb-4">{_role}</div>
+        <button
+          type="button"
+          className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          onClick={() => {
+            let loginSpecificDetails;
+
+            if (_role === Role.AccountOwner) {
+              loginSpecificDetails = {
+                accountOwner: {
+                  account: account.address,
+                  owner: account.owner,
+                },
+              };
+            } else {
+              // Assuming for Role.AccountManager or other manager roles
+              // The connected wallet (walletData.account.address) acts as the manager
+              loginSpecificDetails = {
+                accountManager: {
+                  account: account.address,
+                  manager: walletData!.account.address,
+                },
+              };
+            }
+
+            setSelectedAccount(account)
+
+            execute({
+              ...loginSpecificDetails,
+              signMessage: signMessageWith(walletData!),
+            });
+          }}
+        >
+          Select profile
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">{data?.items?.length ? 'Select a Lens profile' : 'No Lens profiles found'}</h3>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {data?.items?.map((item) => (
+          <LoginWith
+            key={item.account.address}
+            account={item.account}
+            role={item.__typename === 'AccountOwned' ? Role.AccountOwner : Role.AccountManager}
+          />
+        ))}
+
+        {/* Card for creating a new profile */}
+        <div className="bg-white border-dashed border-2 border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-green-500">
+          <p className="text-gray-700 mb-4">Create new Lens profile</p>
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+            onClick={handleCreateProfile}
+          >
+            Create profile
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 }

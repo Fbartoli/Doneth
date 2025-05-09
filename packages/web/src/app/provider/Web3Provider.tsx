@@ -7,6 +7,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import { PonderProvider } from "@ponder/react";
 import { client } from "../ponder/ponder";
+import { LensProvider } from '@lens-protocol/react';
+import { lensClient } from "../lens";
+import { SelectedAccountProvider } from "../../contexts/SelectedAccountContext";
 // Fetch WalletConnect Project ID and Alchemy ID from environment variables
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "";
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID || "";
@@ -41,7 +44,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <PonderProvider client={client}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <ConnectKitProvider>{children}</ConnectKitProvider>
+          <LensProvider client={lensClient}>
+            <SelectedAccountProvider>
+              <ConnectKitProvider>{children}</ConnectKitProvider>
+            </SelectedAccountProvider>
+          </LensProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </PonderProvider>
