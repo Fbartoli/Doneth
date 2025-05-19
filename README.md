@@ -9,8 +9,13 @@ Key features include:
 -   **Community Building**: Each project has an associated group, creating a dedicated space for supporters and a project team to connect.
 -   **Project Feeds**: Every project group includes a feed where members can share updates, discussions, and engage with the community, enhancing transparency and interaction.
 
+The project consists of two main components:
+
+-   **Smart Contracts**: This is the core protocol used to raise and manage funds. It allows fundraisers to create campaigns and securely deploy an escrow contract. This contract holds the contributed funds until the fundraising goal is successfully met. If the goal is not reached, contributors can claim back their funds.
+-   **Web Application**: This application integrates the Doneth fundraising protocol with the Lens Protocol. It provides a user-friendly interface for interacting with the smart contracts and adds a social dimension to projects, enabling community engagement and interaction through Lens.
+
 **Lens Protocol Integration**:
-- The project interacts with the Lens Protocol. The current group creator/main address on Lens Mainnet is `0x936CA54773c7A53F365C7e84bbbE5B33476d8bf2`.
+- The project interacts with the Lens Protocol. The current Factory address on Lens Mainnet is `0x936CA54773c7A53F365C7e84bbbE5B33476d8bf2`.
 
 It utilizes a monorepo structure managed by pnpm to handle multiple packages and their dependencies efficiently.
 
