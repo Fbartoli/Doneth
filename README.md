@@ -2,7 +2,14 @@
 
 ## Overview
 
-This repository contains the Doneth project, a full-stack application built with a modern web and blockchain technology stack. It utilizes a monorepo structure managed by pnpm to handle multiple packages and their dependencies efficiently.
+This repository contains the Doneth project, a full-stack application built with a modern web and blockchain technology stack. Doneth is a fundraising platform designed to empower projects by fostering vibrant communities around them. 
+
+Key features include:
+-   **Project-based Fundraising**: Users can create and contribute to fundraising campaigns for various projects.
+-   **Community Building**: Each project has an associated group, creating a dedicated space for supporters and a project team to connect.
+-   **Project Feeds**: Every project group includes a feed where members can share updates, discussions, and engage with the community, enhancing transparency and interaction.
+
+It utilizes a monorepo structure managed by pnpm to handle multiple packages and their dependencies efficiently.
 
 ## Monorepo Structure
 
