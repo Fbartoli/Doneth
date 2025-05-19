@@ -7,7 +7,7 @@ import { handleOperationWith } from "@lens-protocol/client/viem";
 import { setAccountMetadata } from "@lens-protocol/client/actions";
 import type { SessionClient } from "@lens-protocol/react";
 import type { WalletClient } from "viem";
-import { Account } from "@lens-protocol/react";
+import { useAccount, useAuthenticatedUser } from "@lens-protocol/react";
 
 // Shared storage client instance (can be imported elsewhere if created globally)
 const storageClient = StorageClient.create();
@@ -15,23 +15,21 @@ const storageClient = StorageClient.create();
 interface UpdateAccountMetadataProps {
     sessionClient: SessionClient;
     walletClient: WalletClient;
-    account: Account;
 }
 
-export default function UpdateAccountMetadata({ sessionClient, walletClient, account }: UpdateAccountMetadataProps) {
+export default function UpdateAccountMetadata({ sessionClient, walletClient }: UpdateAccountMetadataProps) {
     const [name, setName] = useState("");
     const [bio, setBio] = useState("");
     const [picture, setPicture] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
-
+    const { data: user } = useAuthenticatedUser();
+    const { data:account } = useAccount({ address: user?.address })
     // Attempt to pre-fill with existing metadata if available
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore – activeAccount is not typed in current sdk types
-        console.log(sessionClient)
-        console.log(account)
         if (account) {
             setName(account.metadata?.name ?? "");
             setBio(account.metadata?.bio ?? "");

@@ -3,82 +3,137 @@ import { useWalletClient, useAccount } from 'wagmi'
 import { usePonderQuery } from "@ponder/react";
 import { Campaign } from "./ponder/ponder.schema";
 import { handleOperationWith, signMessageWith } from "@lens-protocol/client/viem";
-import { evmAddress, Role, Account } from "@lens-protocol/client";
-import { desc, gt } from "ponder";
-import { useAccountsAvailable, useAuthenticatedUser, useLogin, useSessionClient } from "@lens-protocol/react";
-import { useSelectedAccount } from "../contexts/SelectedAccountContext";
+import { evmAddress, Role, Account, never } from "@lens-protocol/client";
+import { useAccountsAvailable, useAuthenticatedUser, useLoginAction } from "@lens-protocol/react";
 import { createAccountWithUsername, fetchAccount } from '@lens-protocol/client/actions';
 import { account } from '@lens-protocol/metadata';
 import { immutable, StorageClient } from "@lens-chain/storage-client";
-
 import { lens } from "viem/chains";
+import React, { useState } from 'react';
+import Link from 'next/link';
+
+import CampaignTable from "../components/CampaignTable";
+import FullPageLoader from "../components/FullPageLoader";
+import { gt } from 'ponder';
 
 const storageClient = StorageClient.create();
 
-
 export default function Home() {
   const { address } = useAccount()
-  const { account: selectedAccount } = useSelectedAccount();
   const { data: authenticatedUser } = useAuthenticatedUser();
-  console.log("authenticatedUser", authenticatedUser)
+  const [expandedCampaignAddress, setExpandedCampaignAddress] = useState<string | null>(null);
 
-  const { isLoading: ponderIsLoading, error: ponderError } = usePonderQuery({
+  const { isLoading: ponderIsLoading, error: ponderError, data: campaignsData } = usePonderQuery({
     queryFn: (db) => {
       const now = Math.floor(Date.now() / 1000);
       return db.select()
         .from(Campaign)
-        .orderBy(desc(Campaign.totalContributions))
         .where(gt(Campaign.deadline, BigInt(now)))
         .limit(10)
     }
   });
 
+  const isAppLoading =
+    authenticatedUser === undefined ||
+    (authenticatedUser && ponderIsLoading);
+
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto">
+    <>
+      {isAppLoading && <FullPageLoader />}
 
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-brand-secondary-light via-neutral-bg to-neutral-bg-lightest py-20 md:py-32 text-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl md:text-6xl font-bold font-display text-neutral-text-dark mb-6">
+            Make a Difference, One Click at a Time.
+          </h1>
+          <p className="text-lg md:text-xl text-neutral-text max-w-2xl mx-auto mb-10">
+            Join us in supporting vital causes. Your generous donation empowers change and brings hope to those who need it most.
+          </p>
+        </div>
+      </section>
 
-          {!selectedAccount && address && !authenticatedUser && (
-            <LoginOptions address={address} />
-          )}
-
-          {!address && (
-            <div className="w-full bg-white p-6 rounded-lg shadow-lg text-center">
-              <h2 className="text-xl font-semibold mb-2 text-gray-700">Welcome to Doneth</h2>
-              <p className="text-gray-600">Please connect your wallet using the button in the top-right corner to continue.</p>
+      {/* Impact Section */}
+      <section className="py-16 md:py-24 bg-neutral-bg">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-neutral-text-dark mb-4">Your Support in Action</h2>
+            <p className="text-lg text-neutral-text max-w-xl mx-auto">
+              Every contribution, big or small, creates a ripple effect of positive change.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Impact Card 1 */}
+            <div className="bg-neutral-bg-lightest p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow">
+              <h3 className="text-2xl font-bold font-display text-brand-primary mb-3">Empower Communities</h3>
+              <p className="text-neutral-text-light">Your donations help fund projects that provide essential resources and create sustainable livelihoods.</p>
             </div>
-          )}
-
-          <div className="w-full">
-
-            {ponderIsLoading && <p className="text-center text-gray-600">Loading campaigns...</p>}
-            {ponderError && <p className="text-center text-red-600">Error loading campaigns: {ponderError.message}</p>}
-
+            {/* Impact Card 2 */}
+            <div className="bg-neutral-bg-lightest p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow">
+              <h3 className="text-2xl font-bold font-display text-brand-secondary mb-3">Drive Innovation</h3>
+              <p className="text-neutral-text-light">Support research and development of new solutions to pressing global challenges.</p>
+            </div>
+            {/* Impact Card 3 */}
+            <div className="bg-neutral-bg-lightest p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow">
+              <h3 className="text-2xl font-bold font-display text-brand-accent-dark mb-3">Foster Hope</h3>
+              <p className="text-neutral-text-light">Bring relief and hope to individuals and families in times of crisis and need.</p>
+            </div>
           </div>
         </div>
-      </main>
+      </section>
+      
+      {/* Campaigns & Wallet Interaction Section */}
+      <section className="py-16 md:py-24 bg-neutral-bg-light">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center gap-8 w-full max-w-5xl mx-auto">
+            {!address && (
+              <div className="w-full bg-neutral-bg p-8 rounded-xl shadow-xl text-center">
+                <h2 className="text-3xl font-bold font-display text-neutral-text-dark mb-4">Ready to Get Started?</h2>
+                <p className="text-lg text-neutral-text mb-6">Connect your wallet to view active campaigns and make a secure donation.</p>
+                {/* ConnectKitButton could be placed here or rely on header */}
+                <p className="text-sm text-neutral-text-light">Please use the &quot;Connect Wallet&quot; button in the header.</p>
+              </div>
+            )}
 
+            {address && !authenticatedUser && (
+              <LoginOptions address={address} />
+            )}
 
-    </div>
+            <div className="w-full">
+              {authenticatedUser && (
+                <>
+                  <h2 className="text-3xl md:text-4xl font-bold font-display text-neutral-text-dark mb-8 text-center">Active Campaigns</h2>
+                  {ponderIsLoading && <p className="text-center text-neutral-text">Loading campaigns...</p>}
+                  {ponderError && <p className="text-center text-feedback-error">Error loading campaigns: {ponderError.message}</p>}
+                  {campaignsData && campaignsData.length > 0 && (
+                    <CampaignTable
+                      campaigns={campaignsData}
+                      expandedCampaignAddress={expandedCampaignAddress}
+                      setExpandedCampaignAddress={setExpandedCampaignAddress}
+                    />
+                  )}
+                  {campaignsData && campaignsData.length === 0 && (
+                     <p className="text-center text-neutral-text text-lg bg-neutral-bg p-8 rounded-xl shadow-md">No active campaigns at the moment. Please check back soon!</p>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 
 export function LoginOptions({ address }: { address: string }) {
   const { data } = useAccountsAvailable({ managedBy: evmAddress(address) });
-  const { execute } = useLogin();
-  const { data: sessionData } = useSessionClient();
+  const { execute } = useLoginAction();
   const { data: walletData } = useWalletClient();
-  const { setAccount: setSelectedAccount } = useSelectedAccount();
 
-
-
-  // Helper to shorten long addresses
   const shorten = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 
   const handleCreateProfile = async () => {
-    // Trigger onboarding (creates a session & profile) then upload metadata & create account
-    await execute({
+    const authenticated = await execute({
       onboardingUser: {
         app: evmAddress("0x167cD03A0dc9eB30A94caAcf3dea05e0f351cBAc"),
         wallet: evmAddress(address),
@@ -86,36 +141,45 @@ export function LoginOptions({ address }: { address: string }) {
       signMessage: signMessageWith(walletData!),
     });
 
+    if (authenticated.isErr()) {
+      return console.error(authenticated.error);
+    }
+
+    const sessionClient = authenticated.value;
+
     const metadata = account({ name: 'New user' });
     const { uri } = await storageClient.uploadFile(
       new File([JSON.stringify(metadata)], 'metadata.json', { type: 'application/json' }),
       { acl: immutable(lens.id) },
     );
-
-    await createAccountWithUsername(sessionData!, {
+    await createAccountWithUsername(sessionClient, {
       metadataUri: uri,
       username: { localName: `user-${Date.now()}` },
     })
       .andThen(handleOperationWith(walletData!))
-      .andThen(sessionData!.waitForTransaction)
-      .andThen((txHash) => fetchAccount(sessionData!, { txHash }))
+      .andThen(sessionClient.waitForTransaction)
+      .andThen((txHash) => fetchAccount(sessionClient, { txHash }))
+      .andThen((account) =>
+        sessionClient.switchAccount({
+          account: account?.address ?? never("Account not found"),
+        })
+      )
       .match(() => { }, (error) => { throw error; });
   };
 
   function LoginWith({ account, role: _role }: { account: Account; role: Role }) {
     return (
-      <div className="bg-white border rounded-lg shadow hover:shadow-md p-6 flex flex-col items-center text-center">
-        <div className="text-lg font-medium text-gray-800 mb-1">
+      <div className="bg-neutral-bg border border-neutral-bg-light rounded-lg shadow-lg hover:shadow-xl p-6 flex flex-col items-center text-center transition-shadow">
+        <div className="text-lg font-medium text-neutral-text-dark mb-1">
           {account.username?.value ?? shorten(account.address)}
         </div>
-        <div className="text-xs text-gray-500 break-all mb-4">{shorten(account.address)}</div>
-        <div className="text-xs text-gray-500 break-all mb-4">{_role}</div>
+        <div className="text-xs text-neutral-text-light break-all mb-4">{shorten(account.address)}</div>
+        <div className="text-xs text-neutral-text-light break-all mb-4">Role: {_role}</div>
         <button
           type="button"
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          className="w-full bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary-light"
           onClick={() => {
             let loginSpecificDetails;
-
             if (_role === Role.AccountOwner) {
               loginSpecificDetails = {
                 accountOwner: {
@@ -124,8 +188,6 @@ export function LoginOptions({ address }: { address: string }) {
                 },
               };
             } else {
-              // Assuming for Role.AccountManager or other manager roles
-              // The connected wallet (walletData.account.address) acts as the manager
               loginSpecificDetails = {
                 accountManager: {
                   account: account.address,
@@ -133,26 +195,26 @@ export function LoginOptions({ address }: { address: string }) {
                 },
               };
             }
-
-            setSelectedAccount(account)
-
             execute({
               ...loginSpecificDetails,
               signMessage: signMessageWith(walletData!),
             });
           }}
         >
-          Select profile
+          Select Profile
         </button>
       </div>
     );
   }
 
   return (
-    <div className="w-full">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">{data?.items?.length ? 'Select a Lens profile' : 'No Lens profiles found'}</h3>
+    <div className="w-full bg-neutral-bg p-8 rounded-xl shadow-xl">
+      <h3 className="text-2xl font-bold font-display text-neutral-text-dark mb-6 text-center">Connect with Lens Protocol</h3>
+      <p className="text-neutral-text text-center mb-6">
+        {data?.items?.length ? 'Select one of your Lens profiles to continue or create a new one.' : 'No Lens profiles found for this wallet. You can create one below.'}
+      </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {data?.items?.map((item) => (
           <LoginWith
             key={item.account.address}
@@ -160,18 +222,18 @@ export function LoginOptions({ address }: { address: string }) {
             role={item.__typename === 'AccountOwned' ? Role.AccountOwner : Role.AccountManager}
           />
         ))}
-
-        {/* Card for creating a new profile */}
-        <div className="bg-white border-dashed border-2 border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-green-500">
-          <p className="text-gray-700 mb-4">Create new Lens profile</p>
-          <button
-            type="button"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
-            onClick={handleCreateProfile}
-          >
-            Create profile
-          </button>
-        </div>
+      </div>
+      
+      <div className="bg-neutral-bg-lightest border-2 border-dashed border-brand-secondary-light rounded-lg p-6 flex flex-col items-center justify-center text-center hover:border-brand-secondary transition-colors">
+        <h4 className="text-xl font-semibold text-neutral-text-dark mb-3">New to Lens?</h4>
+        <p className="text-neutral-text mb-4">Create a new Lens profile to manage your identity and contributions.</p>
+        <button
+          type="button"
+          className="bg-brand-secondary hover:bg-brand-secondary-dark text-white font-semibold py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-secondary-light"
+          onClick={handleCreateProfile}
+        >
+          Create Lens Profile
+        </button>
       </div>
     </div>
   )

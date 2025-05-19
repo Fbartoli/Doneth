@@ -1,10 +1,10 @@
 "use client";
-import UpdateAccountMetadata from "../../components/UpdateAccountMetadata";
+import CreateCampaignGroup from "../../components/CreateCampaignGroup";
 import AuthGuard from "../../components/AuthGuard";
 import { useSessionClient } from "@lens-protocol/react";
 import { useWalletClient } from "wagmi";
 
-export default function EditProfilePage() {
+export default function CreateCampaignPage() {
   const { data: sessionClient } = useSessionClient();
   const { data: walletClient } = useWalletClient();
 
@@ -14,11 +14,10 @@ export default function EditProfilePage() {
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto">
             {sessionClient && walletClient && (
-              <UpdateAccountMetadata sessionClient={sessionClient} walletClient={walletClient} />
+              <CreateCampaignGroup sessionClient={sessionClient} walletClient={walletClient} />
             )}
           </div>
         </main>
-
       </div>
     </AuthGuard>
   );
