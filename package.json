@@ -15,5 +15,13 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.7"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.511.0",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "^1.3.0"
   }
 }

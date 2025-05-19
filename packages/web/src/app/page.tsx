@@ -10,7 +10,6 @@ import { account } from '@lens-protocol/metadata';
 import { immutable, StorageClient } from "@lens-chain/storage-client";
 import { lens } from "viem/chains";
 import React, { useState } from 'react';
-import Link from 'next/link';
 
 import CampaignTable from "../components/CampaignTable";
 import FullPageLoader from "../components/FullPageLoader";
@@ -40,47 +39,6 @@ export default function Home() {
   return (
     <>
       {isAppLoading && <FullPageLoader />}
-
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-brand-secondary-light via-neutral-bg to-neutral-bg-lightest py-20 md:py-32 text-center">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-6xl font-bold font-display text-neutral-text-dark mb-6">
-            Make a Difference, One Click at a Time.
-          </h1>
-          <p className="text-lg md:text-xl text-neutral-text max-w-2xl mx-auto mb-10">
-            Join us in supporting vital causes. Your generous donation empowers change and brings hope to those who need it most.
-          </p>
-        </div>
-      </section>
-
-      {/* Impact Section */}
-      <section className="py-16 md:py-24 bg-neutral-bg">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-neutral-text-dark mb-4">Your Support in Action</h2>
-            <p className="text-lg text-neutral-text max-w-xl mx-auto">
-              Every contribution, big or small, creates a ripple effect of positive change.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Impact Card 1 */}
-            <div className="bg-neutral-bg-lightest p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow">
-              <h3 className="text-2xl font-bold font-display text-brand-primary mb-3">Empower Communities</h3>
-              <p className="text-neutral-text-light">Your donations help fund projects that provide essential resources and create sustainable livelihoods.</p>
-            </div>
-            {/* Impact Card 2 */}
-            <div className="bg-neutral-bg-lightest p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow">
-              <h3 className="text-2xl font-bold font-display text-brand-secondary mb-3">Drive Innovation</h3>
-              <p className="text-neutral-text-light">Support research and development of new solutions to pressing global challenges.</p>
-            </div>
-            {/* Impact Card 3 */}
-            <div className="bg-neutral-bg-lightest p-8 rounded-xl shadow-lg text-center hover:shadow-xl transition-shadow">
-              <h3 className="text-2xl font-bold font-display text-brand-accent-dark mb-3">Foster Hope</h3>
-              <p className="text-neutral-text-light">Bring relief and hope to individuals and families in times of crisis and need.</p>
-            </div>
-          </div>
-        </div>
-      </section>
       
       {/* Campaigns & Wallet Interaction Section */}
       <section className="py-16 md:py-24 bg-neutral-bg-light">
@@ -177,7 +135,7 @@ export function LoginOptions({ address }: { address: string }) {
         <div className="text-xs text-neutral-text-light break-all mb-4">Role: {_role}</div>
         <button
           type="button"
-          className="w-full bg-brand-primary hover:bg-brand-primary-dark text-white font-semibold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary-light"
+          className="w-full bg-brand-primary hover:bg-brand-primary-dark text-black font-semibold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-primary-light"
           onClick={() => {
             let loginSpecificDetails;
             if (_role === Role.AccountOwner) {

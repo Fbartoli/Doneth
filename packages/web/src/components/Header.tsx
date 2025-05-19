@@ -18,7 +18,7 @@ export default function Header() {
   const { execute: logout, error: logoutError } = useLogout();
   const [open, setOpen] = useState(false);
   return (
-    <header className="bg-neutral-bg shadow-md sticky top-0 z-50 border-b border-neutral-bg-light">
+    <header className="bg-background shadow-md sticky top-0 z-50 border-b border-neutral-bg-light">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Link href="/" className="text-3xl font-bold font-display text-brand-primary hover:text-brand-primary-dark transition-colors">
           Doneth
@@ -34,7 +34,7 @@ export default function Header() {
             <div className="relative">
               <button
                 type="button"
-                className="p-2 rounded-md text-neutral-text hover:bg-neutral-bg-light focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-primary"
+                className="p-2 rounded-md text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-ring"
                 onClick={() => setOpen((o) => !o)}
                 aria-label="User menu"
                 aria-expanded={open}

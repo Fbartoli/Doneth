@@ -8,17 +8,24 @@ import { formatEther, parseEther, zeroAddress } from 'viem';
 import FullPageLoader from '../../../components/FullPageLoader';
 import { eq } from 'ponder';
 import { evmAddress } from "@lens-protocol/client";
-import { useGroup } from "@lens-protocol/react";
+import { usePosts, useFeed, useGroup, useCreatePost } from "@lens-protocol/react";
 import React, { useState } from 'react';
-import { useWriteContract } from 'wagmi';
+import { useWalletClient, useWriteContract } from 'wagmi';
 import { campaignAbi } from '../../abis/campaignAbi';
+import { handleOperationWith } from '@lens-protocol/client/viem';
+import { textOnly } from '@lens-protocol/metadata';
+import { immutable, StorageClient } from '@lens-chain/storage-client';
+import { lens } from 'viem/chains';
 
+const storageClient = StorageClient.create();
 // interface CampaignPageParams { // Not strictly needed for page components
 // address: string;
 // }
 
 export default function CampaignPage() {
   const params = useParams();
+  const { data: wallet } = useWalletClient();
+  const { execute, loading: isPosting, error: postError } = useCreatePost(handleOperationWith(wallet));
   const campaignAddress = params.address as string;
 
   const { data: campaignQueryResult, isLoading: isCampaignLoading, error: campaignError } = usePonderQuery({
@@ -34,7 +41,21 @@ export default function CampaignPage() {
     group: groupAddressForHook,
   });
 
+
+  const { data: feed } = useFeed({
+    feed: group?.feed?.address,
+  });
+
+  const feedAddress = feed?.address ? evmAddress(feed?.address) : undefined;
+
+  const { data: posts } = usePosts({
+    filter: {
+      feeds: [{ feed: feedAddress }],
+    },
+  });
+
   const [contributionAmount, setContributionAmount] = useState<string>("");
+  const [postContent, setPostContent] = useState<string>("");
   const { writeContract, isPending: isContributing, error: contributionHookError } = useWriteContract();
 
   console.log(group);
@@ -102,6 +123,30 @@ export default function CampaignPage() {
     }
   };
 
+  const createPost = async () => {
+    if (!postContent.trim()) {
+      alert("Post content cannot be empty.");
+      return;
+    }
+    const metadata = textOnly({
+      content: postContent,
+    });
+
+    const { uri } = await storageClient.uploadFile(
+      new File([JSON.stringify(metadata)], 'metadata.json', { type: 'application/json' }),
+      { acl: immutable(lens.id) },
+    );
+    const result = await execute({
+      contentUri: uri,
+      feed: feedAddress,
+    });
+
+    if (result.isErr()) {
+      alert(result.error.message);
+    }
+    setPostContent("");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-[family-name:var(--font-geist-sans)] py-12 px-4 sm:px-6 lg:px-8">
       <main className="container mx-auto max-w-3xl">
@@ -142,10 +187,10 @@ export default function CampaignPage() {
                 <p className="text-lg text-gray-800 dark:text-gray-100">{group?.metadata?.description}</p>
               </div>
             </div>
-
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Collector Address:</strong> {campaign.address}</p>
             
-            {/* Placeholder for Contribution UI */}
+  
+
             {!isExpired && (
               <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Contribute to this Campaign</h2>
@@ -186,6 +231,65 @@ export default function CampaignPage() {
                 )}
               </div>
             )}
+
+            {/* Posts feed */}
+            <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Campaign Updates & Discussion</h2>
+              
+              {/* New Post Input */}
+              <div className="mb-8 bg-white dark:bg-gray-800 shadow rounded-lg p-5">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Create a new post</h3>
+                <textarea
+                  value={postContent}
+                  onChange={(e) => setPostContent(e.target.value)}
+                  placeholder="What&apos;s on your mind?"
+                  rows={3}
+                  className="w-full p-2 text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-150"
+                  disabled={isPosting}
+                />
+                <button
+                  onClick={createPost}
+                  className="mt-3 w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md shadow-sm hover:shadow-md transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isPosting || !postContent.trim()}
+                >
+                  {isPosting ? 'Posting...' : 'Post Update'}
+                </button>
+                {postError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">Error: {postError.message}</p>}
+              </div>
+
+              {/* Display Posts */}
+              {(!posts || posts.items.length === 0) && !isGroupLoading && feedAddress && (
+                 <p className="text-gray-600 dark:text-gray-400">No posts yet in this campaign&apos;s feed. Be the first to share an update!</p>
+              )}
+              {posts?.items.map((post) => {
+                if (post.__typename === 'Post') {
+                  return (
+                    <div key={post.id} className="bg-white dark:bg-gray-800 shadow rounded-lg p-5 mb-4">
+                      <div className="flex items-center mb-2">
+                        <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 mr-3"></div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate" title={post.author?.address}>
+                            {post.author?.address ?? 'Unknown Author'}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {post.timestamp ? new Date(post.timestamp).toLocaleString() : 'Date N/A'}
+                          </p>
+                        </div>
+                      </div>
+                      {post.metadata && 'content' in post.metadata && typeof (post.metadata).content === 'string' && (
+                        <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                          {(post.metadata).content}
+                        </p>
+                      )}
+                    </div>
+                  );
+                }
+                return null;
+              })}
+              {isGroupLoading && <p>Loading posts...</p> }
+
+
+            </div>
           </div>
         </div>
       </main>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import './globals.css'; // Import global styles
 import { Providers } from './provider/Web3Provider';
 import Header from "@/components/Header";
 
