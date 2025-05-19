@@ -58,7 +58,6 @@ export default function CampaignPage() {
   const [postContent, setPostContent] = useState<string>("");
   const { writeContract, isPending: isContributing, error: contributionHookError } = useWriteContract();
 
-  console.log(group);
 
   if (isCampaignLoading || (campaign && isGroupLoading && groupAddressForHook)) {
     return <FullPageLoader />;
@@ -144,6 +143,7 @@ export default function CampaignPage() {
     if (result.isErr()) {
       alert(result.error.message);
     }
+    
     setPostContent("");
   };
 
